@@ -16,7 +16,7 @@ export default function handler(req, res) {
       
       board.on('ready', () => {
         isBoardInitializing = false;
-        turnOnLEDWithTimer(res);
+        activateDiffuser(res);
       });
 
       board.on('error', (error) => {
@@ -26,44 +26,61 @@ export default function handler(req, res) {
       });
 
     } else if (board && board.isReady && led) {
-      turnOnLEDWithTimer(res);
+      activateDiffuser(res);
     }
   } else {
     res.status(405).json({ message: 'Error encountered' });
   }
 }
 
-function turnOnLEDWithTimer(res) {
+function activateDiffuser(res) {
   switch (ledNumber) {
     case 1:
       console.log('Board is ready 1');
-      led = new Led(13);
-      console.log('Board is ready 11');
+      led = new Led(9);
       break;
     case 2:
       console.log('Board is ready 2');
-      led = new Led(12);
-      console.log('Board is ready 22');
+      led = new Led(9);
       break;
     case 3:
       console.log('Board is ready 3');
-      led = new Led(11);
-      console.log('Board is ready 33');
+      led = new Led(9);
       break;
     default:
       console.log('Board is ready 4');
-      led = new Led(13);
-      console.log('Board is ready 44');
+      led = new Led(9);
       break;
   }
 
-  led.on();
-  console.log('LED turned on');
-  
-  setTimeout(() => {
-    led.off();
-    console.log('LED turned off after 2 seconds');
-  }, 2000);
+  const delayTime = 1000; // 1 second
 
-  res.status(200).json({ message: 'LED turned on for 2 seconds' });
+  // Wait for the delay time, then turn the LED off
+  setTimeout(() => {
+    led.on();
+    console.log('Diffuser activated');
+
+    // Wait for another delay time, then turn it back on
+    setTimeout(() => {
+      led.off();
+
+      // Wait for the delay time, then turn it off
+      setTimeout(() => {
+        led.on();
+
+        setTimeout(() => {
+          led.off();
+
+          setTimeout(() => {
+            led.on();
+          }, delayTime);
+
+        }, delayTime);
+
+      }, delayTime);
+    }, delayTime);
+
+  }, delayTime);
+
+  res.status(200).json({ message: 'Diffuser Activated' });
 }
